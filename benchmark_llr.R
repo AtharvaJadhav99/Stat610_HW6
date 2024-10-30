@@ -1,3 +1,6 @@
+library(microbenchmark)
+library(reshape2)
+
 source("llr_functions.R")
 # Try out functions to see if it works on some data:
 library(reshape2) # package that contains "french_fries"
@@ -6,6 +9,16 @@ french_fries = french_fries[complete.cases(french_fries),]
 z = seq(0, 15, length.out = 100)
 fits = llr(z = z, x = french_fries$potato, y = french_fries$buttery, omega = 2)
 plot(z, fits)
+
+
+timing_results <- microbenchmark(
+  llr_result = llr(z = z, x = french_fries$potato, y = french_fries$buttery, omega = 2),
+  times = 10  # Adjust the number of repetitions for a more accurate measure
+)
+
+# Print the timing results
+print(timing_results)
+
 
 # Loop through different omega values
 for (i in 1:10){
