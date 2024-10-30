@@ -8,11 +8,11 @@ compute_f_hat <- function(z, x, y, omega) {
   weights <- make_weight_matrix(z, x, omega)
   X <- make_predictor_matrix(x)
   
-  # Apply weights directly to X and y
-  WX <- X * weights  
-  Wy <- y * weights  
+  # Use `sweep` to apply weights to each row of X
+  WX <- sweep(X, 1, weights, `*`)  # Each row in X is multiplied by corresponding weight
+  Wy <- y * weights                # Each element of y is multiplied by corresponding weight
   
-  # Calculate f_hat with weighted X and y
+  # Calculate f_hat
   f_hat <- c(1, z) %*% solve(t(WX) %*% X) %*% t(WX) %*% Wy
   return(f_hat)
 }
