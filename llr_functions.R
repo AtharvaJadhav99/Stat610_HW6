@@ -4,29 +4,29 @@ llr = function(x, y, z, omega) {
   return(fits)
 }
 
-# Compute f hat function:
-compute_f_hat = function(z, x, y, omega) {
-  Wz = make_weight_matrix(z, x, omega)
-  X = make_predictor_matrix(x)
-  f_hat = c(1, z) %*% solve(t(X) %*% Wz %*% X) %*% t(X) %*% Wz %*% y
+compute_f_hat <- function(z, x, y, omega) {
+  weights <- make_weight_matrix(z, x, omega)
+  X <- make_predictor_matrix(x)
+  
+  # Apply weights directly to X and y
+  WX <- X * weights  
+  Wy <- y * weights  
+  
+  # Calculate f_hat with weighted X and y
+  f_hat <- c(1, z) %*% solve(t(WX) %*% X) %*% t(WX) %*% Wy
   return(f_hat)
 }
 
-# Below is our task to write weight matrix function:
-make_weight_matrix = function(z, x, omega) {
-  # Define the weight function W(r)
-  W = function(r) {
+
+make_weight_matrix <- function(z, x, omega) {
+  W <- function(r) {
     ifelse(abs(r) < 1, (1 - abs(r)^3)^3, 0)
   }
-  
-  # Compute the weights for each point based on the distance to z
-  distances = abs(x - z) / omega
-  weights = W(distances)
-  
-  # Return a diagonal matrix with the weights
-  Wz = diag(weights)
-  return(Wz)
+  distances <- abs(x - z) / omega
+  weights <- W(distances)
+  return(weights)  # Return weights as a vector
 }
+
 
 # Below is our task to write predictor matrix function:
 make_predictor_matrix = function(x) {
